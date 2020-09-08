@@ -101,10 +101,7 @@ def evolve_graph(G):
     G.remove_nodes_from(nodes_to_be_removed) ##Remove nodes from the current set of nodes with probability 'change_percentage_remove_nodes' 
     print(node_count-G.number_of_nodes(), "nodes removed")
     #----------------------------------------------------------------------------
-    #######################################################################################################################
-    #TO FIX: SOMEHOW NUMBER OF NODES DELETED IS MORE THAN NUMBER OF NODES ADDED, GRADUALLY DECREASING THE SIZE OF THE GRAPH
-    #######################################################################################################################
-
+    
     #------------------Adding edges to the current graph-------------------------
     #----------------------------------------------------------------------------
 
