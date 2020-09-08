@@ -80,8 +80,6 @@ def evolve_graph(G):
     global total_number_of_nodes_in_history
     start_id = total_number_of_nodes_in_history
     node_count = G.number_of_nodes()
-    #nodes_to_be_added = [node_iter for node_iter in range(node_count, int(node_count*change_percentage_add_nodes))]
-    #G.add_nodes_from(nodes_to_be_added)
     for i in range(int(node_count*change_percentage_add_nodes)):
         node_id = total_number_of_nodes_in_history + i
         G.add_node(node_id) #Add a new node with id continuing from last added id
@@ -89,17 +87,10 @@ def evolve_graph(G):
     number_of_nodes_added = i+1
     total_number_of_nodes_in_history += number_of_nodes_added
     initialize_strategies(start_id, number_of_nodes_added) #Initialize the strategies for the newly added nodes
-    print("--------------------------------------")
-    print(i+1, "nodes attempted to be added")
-    print(G.number_of_nodes()-node_count, "nodes added")
     #----------------------------------------------------------------------------
 
     #---------------Removing nodes from the current graph------------------------
-    node_count = G.number_of_nodes()
-    nodes_to_be_removed = list(random.sample(G.nodes(),int(G.number_of_nodes()*change_percentage_remove_nodes)))
-    print(len(nodes_to_be_removed), "nodes attempted to be removed")
-    G.remove_nodes_from(nodes_to_be_removed) ##Remove nodes from the current set of nodes with probability 'change_percentage_remove_nodes' 
-    print(node_count-G.number_of_nodes(), "nodes removed")
+    G.remove_nodes_from(random.sample(G.nodes(),int(G.number_of_nodes()*change_percentage_remove_nodes))) ##Remove nodes from the current set of nodes with probability 'change_percentage_remove_nodes' 
     #----------------------------------------------------------------------------
     
     #------------------Adding edges to the current graph-------------------------
