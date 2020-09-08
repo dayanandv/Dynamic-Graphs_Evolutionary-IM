@@ -23,11 +23,12 @@ from tqdm import tqdm
 from itertools import cycle
 import numpy as np
 
+#--------------------------------------------------Configuration--------------------------------------------------
 N = 2000    #Number of users
 k = 20      #Average degree
 p = k/N     #Probability that a node connects with any of it's arbitrary neighbour, might be same as the alpha (selection parametr) mentioned in the paper
-G_N = 40 #Number of times the graph has to be regenerated
-S_M = 1000  #Number of times simulations have to be conducted on one graph
+G_N = 1 #Number of times the graph has to be regenerated
+S_M = 100  #Number of times simulations have to be conducted on one graph
 payoff_matrix = [[0.4, 0.48, 0.48, 0.64],\
                  [0.48, 0.24, 0.64, 0.32],\
                  [0.48, 0.64, 0.24, 0.32],\
@@ -36,12 +37,14 @@ strategy_percentages = [0.1, 0.2, 0.3, 0.4] #Taking advantage of the index here,
 final_results = [strategy_percentages]
 simulations_results_collection = {}
 no_of_iterations = 0
-
-#----------------------------------------------------Dynamics----------------------------------------------------
+total_number_of_nodes_in_history = 0
+#------------------------------------------------------Dynamics-----------------------------------------------------
 change_percentage_add_nodes = 0.01 #Percentage of node additions expected in a graph per iteration (Dynamicity)
 change_percentage_remove_nodes = 0.001 #Percentage of node removals expected in a graph per iteration (Dynamicity)
 change_percentage_add_edges = 0.01 #Percentage of edge additions expected in a graph per iteration (Dynamicity)
 change_percentage_remove_edges = 0.01 #Percentage of edge removals expected in a graph per iteration (Dynamicity)
+#-------------------------------------------------------------------------------------------------------------------
+
 
 def plot_strategy_evolution(results_df, number_of_graphs, number_of_simulations):
     plt.figure(figsize=(24, 6))
@@ -74,17 +77,29 @@ def initialize_strategies(start_id, number_of_nodes):
 def evolve_graph(G):
     #------------------------------------Graph evolves here--------------------------------------------------
     #----------Introducing new nodes into the graph and connecting them----------
+    global total_number_of_nodes_in_history
+    start_id = total_number_of_nodes_in_history
     node_count = G.number_of_nodes()
+    #nodes_to_be_added = [node_iter for node_iter in range(node_count, int(node_count*change_percentage_add_nodes))]
+    #G.add_nodes_from(nodes_to_be_added)
     for i in range(int(node_count*change_percentage_add_nodes)):
-        node_id = node_count+i
+        node_id = total_number_of_nodes_in_history + i
         G.add_node(node_id) #Add a new node with id continuing from last added id
         G.add_edges_from(zip(cycle([node_id]), random.sample(G.nodes(),int(p*N)))) #Create edges from the newly added node to other nodes in the graph with probability 'p' 
-    initialize_strategies(start_id=node_count, number_of_nodes=i+1) #Initialize the strategies for the newly added nodes
-    node_count = G.number_of_nodes()
+    number_of_nodes_added = i+1
+    total_number_of_nodes_in_history += number_of_nodes_added
+    initialize_strategies(start_id, number_of_nodes_added) #Initialize the strategies for the newly added nodes
+    print("--------------------------------------")
+    print(i+1, "nodes attempted to be added")
+    print(G.number_of_nodes()-node_count, "nodes added")
     #----------------------------------------------------------------------------
 
     #---------------Removing nodes from the current graph------------------------
-    G.remove_nodes_from(random.sample(G.nodes(),int(G.number_of_nodes()*change_percentage_remove_nodes))) ##Remove nodes from the current set of nodes with probability 'change_percentage_remove_nodes' 
+    node_count = G.number_of_nodes()
+    nodes_to_be_removed = list(random.sample(G.nodes(),int(G.number_of_nodes()*change_percentage_remove_nodes)))
+    print(len(nodes_to_be_removed), "nodes attempted to be removed")
+    G.remove_nodes_from(nodes_to_be_removed) ##Remove nodes from the current set of nodes with probability 'change_percentage_remove_nodes' 
+    print(node_count-G.number_of_nodes(), "nodes removed")
     #----------------------------------------------------------------------------
     #######################################################################################################################
     #TO FIX: SOMEHOW NUMBER OF NODES DELETED IS MORE THAN NUMBER OF NODES ADDED, GRADUALLY DECREASING THE SIZE OF THE GRAPH
@@ -102,6 +117,7 @@ def evolve_graph(G):
 for i in tqdm(range(G_N),desc='Graphs'): #Regerate graphs G_N times
     #print("Graph #", i, "is created. Strategy percentages are:",strategy_percentages)
     G = nx.erdos_renyi_graph(N, p, seed = 100) #Generating random graph
+    total_number_of_nodes_in_history += N
     intermediate_results = [strategy_percentages] #List to store strategy percentages of each simulation on this graph, initialize it with the default values
     current_strategy_percentages = strategy_percentages
     initialize_strategies(0, N) #Initialize the user strategy according to the strategy_percentages fractions for the entire graph
@@ -159,4 +175,4 @@ for simulation_iter in range(S_M):
 strategy_averages_df = pd.DataFrame(strategy_averages)
 plot_strategy_evolution(strategy_averages_df, number_of_graphs=G_N, number_of_simulations=S_M)
 
-print("Number of nodes at the end of simulation:", G.number_of_nodes()
+print("Number of nodes at the end of simulation:", G.number_of_nodes())
