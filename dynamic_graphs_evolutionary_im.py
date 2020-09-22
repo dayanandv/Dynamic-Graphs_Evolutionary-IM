@@ -55,7 +55,7 @@ def plot_strategy_evolution(results_df, number_of_graphs, number_of_simulations)
     plt.title("Strategy vs Iterations (" + str(number_of_graphs) + " Graphs with " + str(number_of_simulations) +" simulations each)")
     plot = sns.lineplot(data=results_df, dashes=False)
     fig = plot.get_figure()
-    fig.savefig("/home/dayanand/Work/PhD/Experiments/GameTheory Experiments/output.png")
+    fig.savefig("./output.png")
     
 
 def update_strategy_percentage(G):
