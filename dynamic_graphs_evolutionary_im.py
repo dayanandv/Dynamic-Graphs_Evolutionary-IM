@@ -83,7 +83,7 @@ def evolve_graph(G):
     for i in range(int(node_count*change_percentage_add_nodes)):
         node_id = total_number_of_nodes_in_history + i
         G.add_node(node_id) #Add a new node with id continuing from last added id
-        G.add_edges_from(zip(cycle([node_id]), random.sample(G.nodes(),int(p*N)))) #Create edges from the newly added node to other nodes in the graph with probability 'p' 
+        G.add_edges_from(zip(cycle([node_id]), random.sample(G.nodes(),int(p*N)))) #Create edges from the newly added node to other nodes in the graph with probability 'p' (as per the Erdos Renyi strategy). Change this strategy if required to mimic how the graph is created (ER as of now)
     number_of_nodes_added = i+1
     total_number_of_nodes_in_history += number_of_nodes_added
     initialize_strategies(start_id, number_of_nodes_added) #Initialize the strategies for the newly added nodes
