@@ -1,4 +1,5 @@
 old_results/
 process_flow.sh
-game_theory_exeperiments_venv/
+VE/
 .vscode/
+.ipynb_checkpoints/
