@@ -1,2 +1,8 @@
+<<<<<<< HEAD
 VE/
+=======
+old_results/
+process_flow.sh
+game_theory_exeperiments_venv/
+>>>>>>> 0794cb5aa0cd6c2ecbe0b808430ac1ebf718d9fd
 .vscode/
